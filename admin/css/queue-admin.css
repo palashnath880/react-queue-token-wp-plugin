@@ -1,0 +1,147 @@
+.queue_wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    margin-top: 30px;
+    gap: 60px;
+}
+
+.queue_wrapper>div {
+    flex: 1;
+}
+
+.queue_wrapper form {
+    width: 100%;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background: #f4f7f8;
+    border-radius: 8px;
+}
+
+.queue_wrapper h1 {
+    margin: 0 0 30px 0;
+    text-align: center;
+}
+
+.queue_wrapper input[type="text"],
+.queue_wrapper input[type="password"],
+.queue_wrapper input[type="date"],
+.queue_wrapper input[type="datetime"],
+.queue_wrapper input[type="email"],
+.queue_wrapper input[type="number"],
+.queue_wrapper input[type="search"],
+.queue_wrapper input[type="tel"],
+.queue_wrapper input[type="time"],
+.queue_wrapper input[type="url"],
+.queue_wrapper textarea,
+.queue_wrapper select {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    font-size: 14px;
+    height: auto;
+    margin: 0;
+    outline: 0;
+    padding: 8px;
+    width: 100%;
+    background-color: #e8eeef;
+    color: #222831;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) inset;
+    margin-bottom: 30px;
+}
+
+.queue_wrapper input[type="radio"],
+.queue_wrapper input[type="checkbox"] {
+    margin: 0 4px 8px 0;
+}
+
+.queue_wrapper select {
+    padding: 6px;
+    height: 32px;
+    border-radius: 2px;
+}
+
+.queue_wrapper button {
+    padding: 10px;
+    color: #FFF;
+    background-color: #4bc970;
+    font-size: 18px;
+    text-align: center;
+    font-style: normal;
+    border-radius: 5px;
+    width: 100%;
+    border: 1px solid #3ac162;
+    border-width: 1px 1px 3px;
+    box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.1) inset;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.queue_wrapper fieldset {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    border: none;
+}
+
+.queue_wrapper legend {
+    font-size: 1.4em;
+    margin-bottom: 10px;
+}
+
+.queue_wrapper label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.queue_wrapper label.light {
+    font-weight: 300;
+    display: inline;
+}
+
+.branch_error {
+    color: red;
+    margin: 0px !important
+}
+
+.branch_success {
+    color: green;
+    margin: 0px !important
+}
+
+.queue_branchs {
+    background: #f4f7f8;
+    border-radius: 8px;
+    padding: 20px
+}
+
+.queue_wrapper h1 {
+    text-align: center;
+    padding: 20px 0px;
+    margin: 0px;
+    border-bottom: 1px solid violet;
+}
+
+.queue_branch_add form .form_control {
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.queue_branch_add form .form_control label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.queue_branch {
+    padding: 10px;
+}
+
+.queue_branchs table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.queue_branchs table th,
+.queue_branchs table td {
+    padding: 10px 0px;
+    text-align: center;
+}
