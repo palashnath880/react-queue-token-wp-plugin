@@ -10,6 +10,9 @@ const CounterBody = ({ counterStatus, counterLoading, counterHandler, queueToken
     const [loading, setLoading] = useState(false);
     const [waitingTime, setWaitingTime] = useState(null);
     const [remarks, setRemarks] = useState('');
+    const [quantity, setQuantity] = useState(null);
+    const [soField, setSoField] = useState('');
+    const [productRec, setProductRec] = useState(false);
     const { plugin_url, queueBranch } = useContext(QueueContext);
     const [breakTime, setBreakTime] = useState(null);
 
@@ -165,6 +168,34 @@ const CounterBody = ({ counterStatus, counterLoading, counterHandler, queueToken
                                     <td className='py-2'>{queueToken?.cus_mobile}</td>
                                 </tr>
                                 <tr className='border-b border-slate-300'>
+                                    <td className='py-2 pr-2 flex justify-between'>SO<span className='font-bold'>:</span></td>
+                                    <td className='py-2'>
+                                        <input onChange={(e) => setSoField(e.target.value)} defaultValue={soField} className={`w-full rounded-md py-2 px-2 border-2 border-gray-300 ${productRec ? 'pointer-events-auto' : 'pointer-events-none'} `} type={'text'} name='so_field' />
+                                    </td>
+                                </tr>
+                                <tr className='border-b border-slate-300'>
+                                    <td className='py-2 pr-2 flex justify-between'>Product Received<span className='font-bold'>:</span></td>
+                                    <td className='py-2'>
+                                        <input
+                                            onChange={(e) => {
+                                                if (e.target.checked == false) {
+                                                    setSoField('');
+                                                }
+                                                setProductRec(e.target.checked);
+                                            }}
+                                            className='rounded-md py-2 px-2 peer'
+                                            type='checkbox'
+                                            name='product_rec'
+                                        />
+                                    </td>
+                                </tr>
+                                <tr className='border-b border-slate-300'>
+                                    <td className='py-2 pr-2 flex justify-between'>Quantity<span className='font-bold'>:</span></td>
+                                    <td className='py-2'>
+                                        <input onChange={(e) => setQuantity(e.target.value)} className='w-full rounded-md py-2 px-2 border-2 border-gray-300' type={'number'} name='quantity' />
+                                    </td>
+                                </tr>
+                                <tr className='border-b border-slate-300'>
                                     <td className='py-2 pr-2 flex justify-between'>Remarks<span className='font-bold'>:</span></td>
                                     <td className='py-2'>
                                         <textarea onChange={(e) => setRemarks(e.target.value)} className='w-full px-2 py-2 rounded-md focus:outline-violet-500 resize-y border-2 border-gray-300' placeholder='Write Remarks .....'></textarea>
@@ -178,6 +209,9 @@ const CounterBody = ({ counterStatus, counterLoading, counterHandler, queueToken
                 <div className='w-2/12 bg-zinc-50 border-2 border-gray-200 p-2 rounded-lg'>
                     <CounterBodySideBar
                         remarks={remarks}
+                        quantity={quantity}
+                        productRec={productRec}
+                        soField={soField}
                         queueToken={queueToken}
                         setQueueToken={setQueueToken}
                         loading={loading}

@@ -6,7 +6,19 @@ import { useDetectClickOutside } from 'react-detect-click-outside';
 
 const CounterBodySideBar = (props) => {
 
-    const { remarks, queueToken, setQueueToken, breakTime, setBreakTime, setLoading, loading, counterHandler } = props;
+    const {
+        remarks,
+        queueToken,
+        setQueueToken,
+        breakTime,
+        setBreakTime,
+        setLoading,
+        loading,
+        counterHandler,
+        quantity,
+        soField,
+        productRec
+    } = props;
 
     const [counters, setCounters] = useState([]);
     const [transferQueue, setTransferQueue] = useState(null);
@@ -15,6 +27,7 @@ const CounterBodySideBar = (props) => {
 
     const ref = useDetectClickOutside({ onTriggered: () => setBreakMenuOpen(false) });
 
+    //handle recall function
     const reCallQueue = async () => {
         const res = await fetch(`${plugin_url}queue-counter-manage.php`, {
             method: 'POST',
@@ -27,6 +40,7 @@ const CounterBodySideBar = (props) => {
         console.log(data);
     }
 
+    // handle break time
     const handleBreak = (reason) => {
         setLoading(true);
         fetch(`${plugin_url}queue-counter-manage.php`, {
@@ -43,6 +57,7 @@ const CounterBodySideBar = (props) => {
             .catch(err => console.error(err));
     }
 
+    //handle pause 
     const handlePause = () => {
         setLoading(true);
         fetch(`${plugin_url}queue-counter-manage.php?id=${breakTime?.id}`, {
@@ -61,9 +76,10 @@ const CounterBodySideBar = (props) => {
             .catch(err => console.error(err));
     }
 
+    // update queue status
     const handleQueueStatus = (queueID, status) => {
         const url = `${plugin_url}queue-counter-manage.php?queue_id=${queueID}`;
-        fetch(url, { method: 'PATCH', body: JSON.stringify({ remarks, status }) })
+        fetch(url, { method: 'PATCH', body: JSON.stringify({ remarks, quantity, soField, productRec, status }) })
             .then(res => res.json())
             .then(data => {
                 if (data?.status === 'good') {
@@ -75,6 +91,7 @@ const CounterBodySideBar = (props) => {
             .catch(err => console.error(err));
     }
 
+    // counter transfer
     const handleCounterTransfer = (e) => {
         e.preventDefault();
         const form = e.target;
@@ -94,6 +111,7 @@ const CounterBodySideBar = (props) => {
             .catch(err => console.error(err));
     }
 
+    // counter logout
     const logOutHandler = () => {
         counterHandler(queueBranch?.id, 'off');
         window.location.href = queueBranch?.logout_url;

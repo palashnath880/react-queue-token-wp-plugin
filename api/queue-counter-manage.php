@@ -11,7 +11,7 @@ $headers = getallheaders();
 $queue_counter = new QueueCounter();
 
 // get all counters
-if( isset($_GET['branch_id']) && isset($headers['GET_ALL_COUNTER']) ){
+if( isset($_GET['branch_id']) && isset($headers['get_all_counter']) ){
     $all_counter = $queue_counter->all_counters($_GET['branch_id']);
     echo json_encode($all_counter);
     die();
@@ -63,7 +63,7 @@ if( isset($_GET['queue_id']) && isset($_GET['transfer_counter'])&& $_SERVER['REQ
 if(isset($_GET['queue_id']) && $_SERVER['REQUEST_METHOD'] === 'PATCH'){
     $json = file_get_contents('php://input');
     $data = json_decode($json);
-    $queue_close = $queue_counter->queue_status_update($_GET['queue_id'], $data->remarks, $data->status );
+    $queue_close = $queue_counter->queue_status_update($_GET['queue_id'], $data );
     echo json_encode($queue_close);
     die();
 }

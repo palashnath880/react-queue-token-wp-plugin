@@ -194,12 +194,21 @@ class QueueCounter{
 
     }
 
-    public function queue_status_update($queue_id, $remarks, $status ){
+    public function queue_status_update($queue_id, $data ){
+
+        $remarks = $data->remarks;
+        $status = $data->status;
+        $quantity = $data->quantity;
+        $so_field = $data->soField;
+        $product_rec = $data->productRec;
 
         $update_data = array(
-            'remarks' => $remarks,
-            'status'  => $status,
-            'close_date' => $this->cu_date,
+            'remarks'      => $remarks,
+            'status'       => $status,
+            'quantity'     => $quantity,
+            'so'           => $so_field,
+            'product_rec'  => $product_rec ? 'true' : 'false',
+            'close_date'   => $this->cu_date,
         );
 
         $update_des = array(

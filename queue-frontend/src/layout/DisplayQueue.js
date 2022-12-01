@@ -18,9 +18,10 @@ const DisplayQueue = () => {
         }
     });
 
+    // get all open counter
     const openCounter = () => {
         const url = `${plugin_url}queue-token-display.php?branch_id=${queueBranch?.branch_id}`;
-        fetch(url, { headers: { 'GET_ALL_COUNTERS': 'QUEUE_DISPLAY' } })
+        fetch(url, { headers: { 'get_all_counters': 'QUEUE_DISPLAY' } })
             .then(res => res.json())
             .then(data => setOpenCounters(data?.counters))
             .catch(err => console.error(err));
@@ -48,9 +49,10 @@ const DisplayQueue = () => {
         setIsFullScreen(false);
     }
 
+    // pending queue token
     const pendingQueueToken = () => {
         const url = `${plugin_url}queue-token-display.php?branch_id=${queueBranch?.branch_id}`;
-        fetch(url, { headers: { 'GET_NEXT_QUEUE': 'NEXT_QUEUE' } })
+        fetch(url, { headers: { 'get_next_queue': 'NEXT_QUEUE' } })
             .then(res => res.json())
             .then(data => {
                 setNextTokens(data?.tokens);
@@ -58,10 +60,11 @@ const DisplayQueue = () => {
             .catch(err => console.error(err));
     }
 
+    // get recall token
     const fetchReCallToken = () => {
         fetch(`${plugin_url}queue-token-display.php?branch_id=${queueBranch?.branch_id}`, {
             headers: {
-                'GET_RECALL_TOKEN': 'TRUE'
+                'get_recall_token': 'TRUE'
             }
         })
             .then(res => res.json())
@@ -92,6 +95,7 @@ const DisplayQueue = () => {
         return () => clearInterval(interval);
     }, [reCallToken]);
 
+    //
     useEffect(() => {
 
         let interval;
@@ -101,7 +105,7 @@ const DisplayQueue = () => {
         }, 1000);
 
         const url = `${plugin_url}queue-token-display.php?branch_id=${queueBranch?.branch_id}`;
-        fetch(url, { headers: { 'GET_VIDEO_ADS': 'VIDEO_ADS' } })
+        fetch(url, { headers: { 'get_video_ads': 'video_ads' } })
             .then(res => res.json())
             .then(data => {
                 setVideoAds(data?.videos);
@@ -113,9 +117,9 @@ const DisplayQueue = () => {
     }, [queueBranch]);
 
     return (
-        <div className='h-screen w-full bg-slate-50' ref={ref}>
+        <div className='h-screen w-full bg-blue-200' ref={ref}>
             <div className='flex h-full flex-col w-11/12 mx-auto overflow-hidden'>
-                <div className='py-2'>
+                <div className='py-2 px-3 bg-violet-500 rounded-md text-slate-50'>
                     <h1 className='text-4xl text-center relative'>
                         <button onClick={isFullScreen ? closeFullScreen : fullScreenHandler} className='absolute left-0 top-1/2 -translate-y-1/2'>
                             {isFullScreen ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -131,6 +135,7 @@ const DisplayQueue = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
                             </svg>
                         </a>
+                        <span className='absolute right-8 font-semibold text-2xl top-1/2 -translate-y-1/2'>{` ${new Date().toDateString()} ${new Date().toLocaleTimeString()}`}</span>
                     </h1>
                 </div>
                 <div className='flex-1 flex py-3'>
@@ -142,8 +147,8 @@ const DisplayQueue = () => {
                         </div>
                     </div>
                     <div className='w-3/12'>
-                        <div className='px-3'>
-                            <div className='border rounded-md'>
+                        <div className='px-3 border rounded-md h-full bg-violet-500 text-slate-50'>
+                            <div className=''>
                                 <h1 className='text-center text-3xl border-b-2 border-violet-500 py-3'>Running Token No</h1>
                                 <table className='w-full table border-collapse mt-4'>
                                     <thead>

@@ -3,9 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 const VideoPlayer = ({ videos }) => {
 
     const video = useRef();
-    const videoRef = useRef();
     const [index, setIndex] = useState(0);
-    const [videoHeight, setVideoHeight] = useState('');
     const [currentVideoSrc, setCurrentVideoSrc] = useState(null);
 
     const videoHandler = () => {
@@ -18,17 +16,9 @@ const VideoPlayer = ({ videos }) => {
 
     useEffect(() => {
 
-        let interval;
-        interval = setInterval(() => {
-            // const height = videoRef.current.clientHeight;
-            // setVideoHeight(height);
-        }, 1000);
-
         if (videos !== null) {
             setCurrentVideoSrc(videos[index]);
         }
-
-        return () => clearInterval(interval);
 
     }, [index, videos])
 

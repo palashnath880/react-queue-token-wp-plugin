@@ -1,22 +1,24 @@
 import React, { useContext, useState } from 'react';
 import BranchCounter from '../components/BranchCounter/BranchCounter';
 import BranchReport from '../components/BranchReport/BranchReport';
+import CounterDefine from '../components/CounterDefine/CounterDefine';
 import { QueueContext } from '../contexts/QueueContextProvider';
 
 const BranchManage = () => {
 
     const [menuItem, setMenuItem] = useState(<BranchCounter />);
-    const { queueBranch, plugin_url } = useContext(QueueContext);
+    const { queueBranch } = useContext(QueueContext);
 
     return (
         <>
             <div className='flex flex-row gap-4'>
-                <div className='w-72 bg-gray-600 h-screen overflow-y-auto'>
+                <div className='w-72 bg-gray-600 h-screen overflow-y-auto sticky top-0 left-0'>
                     <div className='px-2 py-3 h-full text-slate-50 flex flex-col'>
-                        <h2 className='text-center text-2xl pb-3 border-b'>Branch Name</h2>
+                        <h2 className='text-center text-2xl pb-3 border-b'>{queueBranch?.name}</h2>
                         <ul className='mt-4 flex-1'>
                             <li onClick={() => setMenuItem(<BranchCounter />)} className='rounded-lg bg-slate-500 px-3 py-2 mb-2 cursor-pointer'>Counter</li>
                             <li onClick={() => setMenuItem(<BranchReport />)} className='rounded-lg bg-slate-500 px-3 py-2 mb-2 cursor-pointer'>Report</li>
+                            <li onClick={() => setMenuItem(<CounterDefine />)} className='rounded-lg bg-slate-500 px-3 py-2 mb-2 cursor-pointer'>Counter Define</li>
                         </ul>
                         <div className='py-2'>
                             <a href={queueBranch?.logout_url} className='rounded-lg block bg-slate-500 px-3 py-3 flex gap-2'>

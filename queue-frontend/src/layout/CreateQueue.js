@@ -2,12 +2,14 @@ import React, { useContext, useRef, useState } from 'react';
 import QueryQueue from '../components/QueryQueue/QueryQueue';
 import QueueForm from '../components/QueueForm/QueueForm';
 import { QueueContext } from '../contexts/QueueContextProvider';
+import logo from '../images/logo.png';
 
 const CreateQueue = () => {
 
     const { queueBranch } = useContext(QueueContext);
     const [isFullScreen, setIsFullScreen] = useState(false);
     const ref = useRef();
+    const [queueCreator, setQueueCreator] = useState(null);
 
     const fullScreenHandler = () => {
         if (ref.current.requestFullscreen) {
@@ -32,10 +34,28 @@ const CreateQueue = () => {
     }
 
     return (
-        <div className='bg-slate-50 py-10 overflow-y-auto' ref={ref}>
-            <div className='min-h-full w-full flex justify-center items-center relative'>
+        <div
+            className='bg-slate-50 min-h-screen py-10 overflow-y-auto grid place-items-center bg-contain bg-center bg-no-repeat'
+            ref={ref}
+            style={{ backgroundImage: `url(${logo})` }}
+        >
+            <div className='h-full w-full flex justify-center items-center'>
                 <div className='min-w-[440px] px-3 py-4 rounded-md border border-slate-300 shadow-lg'>
-                    <QueueForm products={queueBranch?.queue_products} />
+                    {queueCreator === null ? <>
+                        <div>
+                            <button
+                                onClick={() => setQueueCreator(<QueueForm products={queueBranch?.queue_products} setQueueCreator={setQueueCreator} />)}
+                                className='w-full rounded-md bg-violet-500 text-slate-50 py-2 text-lg mb-2 font-semibold'
+                            >Get Service</button>
+                            <button
+                                onClick={() => setQueueCreator(<QueryQueue setQueueCreator={setQueueCreator} />)}
+                                className='w-full rounded-md bg-violet-500 text-slate-50 py-2 text-lg mb-2 font-semibold'
+                            >Query</button>
+                        </div>
+                    </> :
+                        queueCreator
+                    }
+                    {/* <QueueForm products={queueBranch?.queue_products} /> */}
                 </div>
                 {/* Log out button */}
                 <a href={queueBranch?.logout_url} className='fixed top-[20px] left-[20px]' title='Log Out'>

@@ -12,28 +12,55 @@ $headers = getallheaders();
 $queue = new QueueManage();
 
 // create counter and token creator
-if( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($headers['Create-Queue'])){
+if( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($headers['create-queue'])){
     
     $json = file_get_contents('php://input');
     $data = json_decode($json);
 
     $create_counter = $queue->create_queue_counter(array(
-        'counter_name' => $data->counter_name,
+        'counter_name'  => $data->counter_name,
         'counter_email' => $data->counter_email,
-        'counter_pwd' => $data->counter_pwd,
-        'counter_type' => $data->counter_type,
+        'counter_pwd'   => $data->counter_pwd,
+        'counter_type'  => $data->counter_type,
     ));
     echo json_encode($create_counter);
     die();
 }
 
+// get define counter 
+if(isset($headers['get-counter-define'])){
+    $define_counter = $queue->get_define_counter();
+    echo json_encode($define_counter);
+    die();
+}
+
+// update define counter 
+if(isset($headers['update_define_counter']) && $_SERVER['REQUEST_METHOD'] === 'PATCH'){
+    $json = file_get_contents('php://input');
+    $data = json_decode($json);
+    $update_define_counter = $queue->update_define_counter($data);
+    echo json_encode($update_define_counter);
+    die();
+}
+
 // create queue token 
-if( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($headers['Queue-Creator'])){
+if( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($headers['queue-creator'])){
     
     $json = file_get_contents('php://input');
     $data = json_decode($json);
 
     $create_token = $queue->create_queue_token($data);
+    echo json_encode($create_token);
+    die();
+}
+
+// create query queue token
+if( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($headers['query_queue_create'])){
+    
+    $json = file_get_contents('php://input');
+    $data = json_decode($json);
+
+    $create_token = $queue->create_query_queue_token($data);
     echo json_encode($create_token);
     die();
 }
@@ -65,6 +92,8 @@ echo json_encode(
         'counters'    => $queue->queue_counters(),
         'queue_products' => $queue->queue_products(),
         'logout_url' => wp_logout_url(),
+        'corporate_counter' => get_user_meta($queue->branch_id, 'queue_corporate_counter' , true ) ? get_user_meta($queue->branch_id, 'queue_corporate_counter' , true ) : 0,
+        'printer_counter' => get_user_meta($queue->branch_id, 'queue_printer_counter' , true ) ? get_user_meta($queue->branch_id, 'queue_printer_counter' , true ) : 0,
     )
 );
 

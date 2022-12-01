@@ -102,13 +102,24 @@ class Queue_Public {
 
 }
 
- function my_react_app_init() {
 
+
+// $sms = new SmsBuilder(
+// 	'https://smpp.ajuratech.com/',
+// 	1775,
+// 	'1000fix',
+// 	'1000@3211',
+// );
+
+// $send_sms = $sms->sendMessage('Hello world', '+8801304780828');
+
+ function my_react_app_init() {
     wp_register_script("queue_react_app_js", plugin_dir_url(dirname(__FILE__)).'queue-frontend/build/index.js', array('wp-element'), "1.0", false);
     wp_register_style("queue_react_app_css", plugin_dir_url(dirname(__FILE__))."queue-frontend/build/index.css", array(), "1.0", "all");
 }
 
 add_action( 'init', 'my_react_app_init' );
+
 
 $folder =   dirname(__FILE__); 
 $files = glob($folder."/partials/*.php"); // return array files
@@ -116,3 +127,4 @@ $files = glob($folder."/partials/*.php"); // return array files
 foreach($files as $phpFile){   
     require_once $phpFile; 
 }
+

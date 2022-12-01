@@ -47,6 +47,7 @@ const BranchCounter = () => {
         fetch(url, requestOptions)
             .then(res => res.json())
             .then(data => {
+                console.log(data);
                 setLoading(false);
                 if (data?.status === 'bad') {
                     toast.error(data?.message);
@@ -63,6 +64,14 @@ const BranchCounter = () => {
         <div className='flex gap-2'>
             <div className='w-1/2'>
                 <form onSubmit={createCounterHandler} className='shadow-lg py-4 px-2 rounded-lg border border-slate-300'>
+                    <div className='shadow-lg p-2 mb-3'>
+                        <label className='block mb-2 pl-1' htmlFor='counter_type'>Type</label>
+                        <select name='counter_type' id='counter_type' className='px-2 py-2 w-full border rounded focus:outline-violet-500'>
+                            <option value='queue_counter'>Counter</option>
+                            <option value='queue_creator'>Token Creator</option>
+                            <option value='queue_display'>Token Display</option>
+                        </select>
+                    </div>
                     <div className='shadow-lg p-2 mb-3'>
                         <label className='block mb-2 pl-1' htmlFor='counter_name'>Counter Name</label>
                         <input
@@ -106,14 +115,6 @@ const BranchCounter = () => {
 
                             <button type='button' onClick={generatePwd} className='py-2 px-4 bg-violet-500 text-slate-50'>Generate Password</button>
                         </div>
-                    </div>
-                    <div className='shadow-lg p-2 mb-3'>
-                        <label className='block mb-2 pl-1' htmlFor='counter_type'>Type</label>
-                        <select name='counter_type' id='counter_type' className='px-2 py-2 w-full border rounded focus:outline-violet-500'>
-                            <option value='queue_counter'>Counter</option>
-                            <option value='queue_creator'>Token Creator</option>
-                            <option value='queue_display'>Token Display</option>
-                        </select>
                     </div>
                     <div className='mt-4'>
                         <button disabled={loading ? true : false} className='w-full border border-violet-500 rounded-md bg-violet-500 py-2 font-semibold text-slate-50 hover:bg-transparent hover:text-gray-700 duration-300'>Create Counter</button>

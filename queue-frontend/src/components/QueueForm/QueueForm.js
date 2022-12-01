@@ -3,11 +3,19 @@ import toast from 'react-hot-toast';
 import { QueueContext } from '../../contexts/QueueContextProvider';
 import Select from 'react-select';
 
-const QueueForm = ({ products }) => {
+const QueueForm = ({ products, setQueueCreator }) => {
 
     const [loading, setLoading] = useState(false);
     const [selectedProducts, setSelectedProducts] = useState([]);
     const { plugin_url, queueBranch } = useContext(QueueContext);
+
+
+    const sendQueueToken = async (data, customer_mobile, customer_name) => {
+        const message = `[1000FIX Service Ltd.] Hey ${customer_name}, Your token no is ${data?.queue_token}, Please wait for your turn. Thank you - ${queueBranch?.branch_name} - www.1000fix.com`;
+        const res = await fetch(`http://188.138.41.146:7788/sendtext?apikey=${data?.api_key}&secretkey=${data?.secret_key}&callerID=${data?.caller_id}&toUser=${customer_mobile}&messageContent=${message}`);
+        const resData = await res.json();
+        return resData;
+    }
 
     const queueCreateFormHandler = (event) => {
 
@@ -42,7 +50,7 @@ const QueueForm = ({ products }) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Queue-Creator': queueBranch?.id,
+                'queue-creator': queueBranch?.id,
             },
             body: JSON.stringify({ service_type, productType: selectProducts, customer_type, customer_name, customer_mobile }),
         }
@@ -50,11 +58,14 @@ const QueueForm = ({ products }) => {
         fetch(url, requestOptions)
             .then(res => res.json())
             .then(data => {
+                console.log(data);
                 setLoading(false);
                 if (data?.status === 'good') {
+                    sendQueueToken(data, customer_mobile, customer_name);
                     setSelectedProducts([]);
                     toast.success(data?.message);
                     form.reset();
+                    setQueueCreator(null);
                 } else {
                     toast.error(data?.message);
                 }
@@ -69,7 +80,16 @@ const QueueForm = ({ products }) => {
 
     return (
         <>
-            <form onSubmit={queueCreateFormHandler} className={loading ? 'pointer-events-none' : 'pointer-events-auto'}>
+            <form onSubmit={queueCreateFormHandler} className={`${loading ? 'pointer-events-none' : 'pointer-events-auto'} relative`}>
+                <button
+                    type='button'
+                    className='absolute top-0 left-[10px]'
+                    onClick={() => setQueueCreator(null)}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                    </svg>
+                </button>
                 <div className='rounded-md shadow-lg mb-5'>
                     <h2 className='text-center text-xl pb-3 border-b border-slate-300'>Select Service Type</h2>
                     <div className='py-2 px-2 grid grid-cols-2 gap-2'>
