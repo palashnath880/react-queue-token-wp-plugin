@@ -21,19 +21,19 @@ const App = () => {
     return <QueueFeedback tokenId={search[1]} />
   }
 
-  if (queueBranch?.type === 'queue_branch') {
+  if (queueBranch?.queue_type === 'queue_branch') {
     return <BranchManage />
   }
 
-  if (queueBranch?.type === 'queue_counter') {
+  if (queueBranch?.queue_type === 'queue_counter') {
     return <Counter />
   }
 
-  if (queueBranch?.type === 'queue_display') {
+  if (queueBranch?.queue_type === 'queue_display') {
     return <DisplayQueue />
   }
 
-  if (queueBranch?.type === 'queue_creator') {
+  if (queueBranch?.queue_type === 'queue_creator') {
     return <CreateQueue />
   }
 

@@ -30,7 +30,7 @@ const Counter = () => {
 
     useEffect(() => {
 
-        const url = `${plugin_url}queue-counter-manage.php?counter_id=${queueBranch?.id}`;
+        const url = `${plugin_url}queue-counter-manage.php?counter_id=${queueBranch?.queue_id}`;
 
         fetch(url)
             .then(res => res.json())

@@ -6,7 +6,7 @@ const CounterFooter = ({ counterHandler, loading }) => {
     const { queueBranch } = useContext(QueueContext);
 
     const logOutHandler = () => {
-        counterHandler(queueBranch?.id, 'off');
+        counterHandler(queueBranch?.queue_id, 'off');
         window.location.href = queueBranch?.logout_url;
     }
 

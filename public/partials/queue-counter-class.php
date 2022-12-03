@@ -111,16 +111,15 @@ class QueueCounter{
 
     }
 
-    public function get_queue_token($counter_id , $branch_id){
+    private function update_and_get_queue($get_queue_row, $counter_id, $branch_id ){
 
-        $fr_date = date('Y-m-d');
-        $get_queue_row = $this->wpdb->get_row(
-            $this->wpdb->prepare("SELECT * FROM $this->queue_table WHERE `queue_branch` = '$branch_id' 
-            AND `status` = 'publish' AND Date(issue_date) = '$fr_date' ORDER BY id ASC LIMIT 1 ")
-        );
+        
+        $define_customer = get_user_meta( $branch_id , 'queue_customer' , true);
+        $define_customer_counter = get_user_meta( $branch_id , 'queue_customer_counter' , true);
+        $define_product = get_user_meta( $branch_id , 'queue_product' , true);
+        $define_product_counter = get_user_meta( $branch_id , 'queue_product_counter' , true);
 
         if($get_queue_row){
-
             $queue_id = $get_queue_row->id;
             $queue_token = $get_queue_row->queue_token;
 
@@ -135,7 +134,7 @@ class QueueCounter{
                 'queue_branch' => $branch_id,
             );
 
-            $update = $this->wpdb->update($this->queue_table , $update_data, $update_des );
+            $update = $get_queue_row->status == 'received' ? true : $this->wpdb->update($this->queue_table , $update_data, $update_des );
             $cou = get_user_by('id', $counter_id );
             $counter_name = $cou->display_name;
 
@@ -168,16 +167,56 @@ class QueueCounter{
                     return array('status' => 'bad', 'message' => 'No Queue Token Available. ');
                 }    
             }
-
         }else{
             return array('status' => 'bad', 'message' => 'No Queue Token Available');
         }
+            
+    }
+
+    public function get_queue_token($counter_id , $branch_id){
+
+        $fr_date = date('Y-m-d');
+        $define_customer = get_user_meta( $branch_id , 'queue_customer' , true);
+        $define_customer_counter = get_user_meta( $branch_id , 'queue_customer_counter' , true);
+        $define_product = get_user_meta( $branch_id , 'queue_product' , true);
+        $define_product_counter = get_user_meta( $branch_id , 'queue_product_counter' , true);
+
+        $get_queue_row = "";
+
+        if($define_customer_counter == $counter_id || $define_product_counter == $counter_id ){
+            if($define_customer_counter == $counter_id && ($define_customer != null || $define_customer != '') ){
+                $get_queue_row = $this->wpdb->get_row(
+                    $this->wpdb->prepare("SELECT * FROM $this->queue_table WHERE `queue_branch` = '$branch_id'  
+                        AND `customer_type` = '$define_customer' AND ( `status` = 'publish' OR `status` = 'received' ) 
+                        AND Date(issue_date) = '$fr_date' ORDER BY id ASC LIMIT 1 ")
+                );
+            }elseif($define_product_counter == $counter_id && ($define_product != null || $define_product != '') ){
+                $get_queue_row = $this->wpdb->get_row(
+                    $this->wpdb->prepare("SELECT * FROM $this->queue_table WHERE `queue_branch` = '$branch_id'  
+                        AND `product_type` LIKE '%$define_product%' AND ( `status` = 'publish' OR `status` = 'received' ) 
+                        AND Date(issue_date) = '$fr_date' ORDER BY id ASC LIMIT 1 ")
+                );
+            }else{
+                $get_queue_row = $this->wpdb->get_row(
+                    $this->wpdb->prepare("SELECT * FROM $this->queue_table WHERE `queue_branch` = '$branch_id' 
+                    AND ( `status` = 'publish' OR `status` = 'received' ) AND Date(issue_date) = '$fr_date' ORDER BY id ASC LIMIT 1 ")
+                );
+            }
+        }else{
+            $get_queue_row = $this->wpdb->get_row(
+                $this->wpdb->prepare("SELECT * FROM $this->queue_table WHERE `queue_branch` = '$branch_id' 
+                AND ( `status` = 'publish' OR `status` = 'received' ) AND Date(issue_date) = '$fr_date' ORDER BY id ASC LIMIT 1 ")
+            );
+        }
+        return $this->update_and_get_queue($get_queue_row, $counter_id, $branch_id);
     }
 
     public function transfer_queue($queue_id, $counter_id ){
+        
         $update_data = array(
             'transfer_id' => $counter_id,
             'transfer_date' => $this->cu_date,
+            'status'      => 'transferred'
         );
 
         $update_des = array(
@@ -295,10 +334,10 @@ class QueueCounter{
 
     public function get_transferred_queue_token($counter_id , $branch_id){
 
-        $fr_date = date('Y-m-d');
+        $today = date('Y-m-d');
         $get_queue_row = $this->wpdb->get_row(
             $this->wpdb->prepare("SELECT * FROM $this->queue_table WHERE `queue_branch` = '$branch_id' 
-            AND `transfer_id` = '$counter_id' AND `status` = 'received' AND Date(issue_date) = '$fr_date' ORDER BY id ASC LIMIT 1 ")
+            AND `transfer_id` = '$counter_id' AND `status` = 'transferred' AND Date(issue_date) = '$today' ORDER BY id ASC LIMIT 1 ")
         );
 
         if($get_queue_row){

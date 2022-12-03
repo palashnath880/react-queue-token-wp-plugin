@@ -39,7 +39,7 @@ const BranchCounter = () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Create-Queue': queueBranch?.id,
+                'Create-Queue': queueBranch?.queue_id,
             },
             body: JSON.stringify({ counter_name, counter_email, counter_pwd, counter_type }),
         }

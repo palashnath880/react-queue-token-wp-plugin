@@ -6,7 +6,7 @@ import { QueueContext } from '../contexts/QueueContextProvider';
 
 const BranchManage = () => {
 
-    const [menuItem, setMenuItem] = useState(<BranchCounter />);
+    const [menuItem, setMenuItem] = useState(<CounterDefine />);
     const { queueBranch } = useContext(QueueContext);
 
     return (
@@ -14,7 +14,7 @@ const BranchManage = () => {
             <div className='flex flex-row gap-4'>
                 <div className='w-72 bg-gray-600 h-screen overflow-y-auto sticky top-0 left-0'>
                     <div className='px-2 py-3 h-full text-slate-50 flex flex-col'>
-                        <h2 className='text-center text-2xl pb-3 border-b'>{queueBranch?.name}</h2>
+                        <h2 className='text-center text-2xl pb-3 border-b'>{queueBranch?.queue_name}</h2>
                         <ul className='mt-4 flex-1'>
                             <li onClick={() => setMenuItem(<BranchCounter />)} className='rounded-lg bg-slate-500 px-3 py-2 mb-2 cursor-pointer'>Counter</li>
                             <li onClick={() => setMenuItem(<BranchReport />)} className='rounded-lg bg-slate-500 px-3 py-2 mb-2 cursor-pointer'>Report</li>

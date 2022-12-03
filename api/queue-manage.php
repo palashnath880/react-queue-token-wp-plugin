@@ -84,16 +84,18 @@ if(isset($_GET['queue_id']) && isset($_GET['from_date']) && isset($_GET['to_date
 
 echo json_encode(
     array(
-        'name'       => $queue->queue_name,
-        'type'       => $queue->queue_type,
-        'id'         => $queue->queue_id,
-        'branch_name'=> $queue->branch_name,
-        'branch_id'  => $queue->branch_id,
-        'counters'    => $queue->queue_counters(),
-        'queue_products' => $queue->queue_products(),
-        'logout_url' => wp_logout_url(),
-        'corporate_counter' => get_user_meta($queue->branch_id, 'queue_corporate_counter' , true ) ? get_user_meta($queue->branch_id, 'queue_corporate_counter' , true ) : 0,
-        'printer_counter' => get_user_meta($queue->branch_id, 'queue_printer_counter' , true ) ? get_user_meta($queue->branch_id, 'queue_printer_counter' , true ) : 0,
+        'queue_name'       => $queue->queue_name,
+        'queue_type'       => $queue->queue_type,
+        'queue_id'         => $queue->queue_id,
+        'branch_name'      => $queue->branch_name,
+        'branch_id'        => $queue->branch_id,
+        'counters'         => $queue->queue_counters(),
+        'queue_products'   => $queue->queue_products(),
+        'logout_url'       => wp_logout_url(),
+        'define_customer'  => get_user_meta($queue->branch_id, 'queue_customer' , true ),
+        'queue_customer_counter'  => get_user_meta($queue->branch_id, 'queue_customer_counter' , true ),
+        'define_product'  => get_user_meta($queue->branch_id, 'queue_product' , true ),
+        'queue_product_counter'  => get_user_meta($queue->branch_id, 'queue_product_counter' , true ),
     )
 );
 

@@ -20,7 +20,7 @@ const BranchReport = () => {
         }
         setLoading(true);
 
-        const url = `${plugin_url}queue-manage.php?queue_id=${queueBranch?.id}&from_date=${from_date}&to_date=${to_date}`;
+        const url = `${plugin_url}queue-manage.php?queue_id=${queueBranch?.queue_id}&from_date=${from_date}&to_date=${to_date}`;
         fetch(url)
             .then(res => res.json())
             .then(data => console.log(data))

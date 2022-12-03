@@ -106,16 +106,8 @@ class QueueDisplay{
 
         if($get_recall_token){
 
-            $update_token = array(
-                'post_status' => 'private',
-            );
-
-            $update_des = array(
-                'ID' => $get_recall_token->ID,
-                'post_author' => $branch_id,
-            );
-
-            $update = $this->wpdb->update($posts_table, $update_token, $update_des);
+            wp_delete_post($get_recall_token->ID);
+            
             return array('status' => 'good', 'token' => $get_recall_token->post_title);
         }else{
             return array( 'status' => 'bad', 'message'=> 'Not Found','b'=>$branch_id);

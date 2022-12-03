@@ -50,7 +50,7 @@ const QueueForm = ({ products, setQueueCreator }) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'queue-creator': queueBranch?.id,
+                'queue-creator': queueBranch?.queue_id,
             },
             body: JSON.stringify({ service_type, productType: selectProducts, customer_type, customer_name, customer_mobile }),
         }
@@ -58,7 +58,6 @@ const QueueForm = ({ products, setQueueCreator }) => {
         fetch(url, requestOptions)
             .then(res => res.json())
             .then(data => {
-                console.log(data);
                 setLoading(false);
                 if (data?.status === 'good') {
                     sendQueueToken(data, customer_mobile, customer_name);

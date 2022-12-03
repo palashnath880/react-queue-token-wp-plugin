@@ -60,21 +60,7 @@ class Queue_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Queue_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Queue_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
-		// wp_enqueue_style( $this->plugin_name, plugin_dir_url(dirname(__FILE__)) . 'queue-frontend/build/index.css', array(), $this->version, 'all' );
-
+		
 	}
 
 	/**
@@ -84,36 +70,13 @@ class Queue_Public {
 	 */
 	public function enqueue_scripts() {
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Queue_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Queue_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
-		// wp_enqueue_script( $this->plugin_name, plugin_dir_url( dirname(__FILE__) ) . 'queue-frontend/build/index.js', array(), $this->version, true );
 
 	}
 
 }
 
 
-
-// $sms = new SmsBuilder(
-// 	'https://smpp.ajuratech.com/',
-// 	1775,
-// 	'1000fix',
-// 	'1000@3211',
-// );
-
-// $send_sms = $sms->sendMessage('Hello world', '+8801304780828');
-
- function my_react_app_init() {
+function my_react_app_init() {
     wp_register_script("queue_react_app_js", plugin_dir_url(dirname(__FILE__)).'queue-frontend/build/index.js', array('wp-element'), "1.0", false);
     wp_register_style("queue_react_app_css", plugin_dir_url(dirname(__FILE__))."queue-frontend/build/index.css", array(), "1.0", "all");
 }

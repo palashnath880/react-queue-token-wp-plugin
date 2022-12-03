@@ -8,7 +8,7 @@ const QueueContextProvider = ({ children }) => {
     const [queueBranch, setQueueBranch] = useState(null);
     const [counters, setCounters] = useState(null);
 
-    const plugin_url = window.location.origin + '/wp/wp-content/plugins/queue/api/';
+    const plugin_url = window.location.origin + '/wp-content/plugins/queue/api/';
 
     useEffect(() => {
 

@@ -18,8 +18,8 @@ if( isset($_GET['branch_id']) && isset($headers['get_all_counter']) ){
 }
 
 // counter recall
-if(isset($headers['QUEUE_RECALL_TOKEN']) && isset($headers['QUEUE_BRANCH_ID']) && $_SERVER['REQUEST_METHOD'] === 'POST'){
-    $recall_token = $queue_counter->queue_counter_recall($headers['QUEUE_RECALL_TOKEN'], $headers['QUEUE_BRANCH_ID']);
+if(isset($headers['queue_recall_token']) && isset($headers['queue_branch_id']) && $_SERVER['REQUEST_METHOD'] === 'POST'){
+    $recall_token = $queue_counter->queue_counter_recall($headers['queue_recall_token'], $headers['queue_branch_id']);
     echo json_encode($recall_token);
     die();
 }
@@ -32,14 +32,14 @@ if($_SERVER['REQUEST_METHOD'] === 'PATCH' && isset($_GET['counter_id']) && isset
 }
 
 // get queue token 
-if(isset($_GET['counter_id']) && isset($_GET['branch_id']) && isset($headers['GET_QUEUE_TOKEN'])){
+if(isset($_GET['counter_id']) && isset($_GET['branch_id']) && isset($headers['get_queue_token'])){
     $get_queue_token = $queue_counter->get_queue_token($_GET['counter_id'] , $_GET['branch_id']);
     echo json_encode($get_queue_token);
     die();
 }
 
 // get transferred queue token 
-if(isset($_GET['cou_id']) && isset($_GET['bra_id']) && isset($headers['GET_TRANSFERRED_QUEUE_TOKEN'])){
+if(isset($_GET['cou_id']) && isset($_GET['bra_id']) && isset($headers['get_transferred_queue_token'])){
     $get_transferred_queue_token = $queue_counter->get_transferred_queue_token($_GET['cou_id'] , $_GET['bra_id']);
     echo json_encode($get_transferred_queue_token);
     die();
@@ -69,7 +69,7 @@ if(isset($_GET['queue_id']) && $_SERVER['REQUEST_METHOD'] === 'PATCH'){
 }
 
 //counter break
-if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($headers['Queue-Break'])){
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($headers['queue-break'])){
     $json = file_get_contents('php://input');
     $data = json_decode($json);
 
@@ -80,7 +80,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($headers['Queue-Break'])){
 }
 
 // counter pause
-if($_SERVER['REQUEST_METHOD'] === 'PATCH' && isset($headers['Queue-Pause'])){
+if($_SERVER['REQUEST_METHOD'] === 'PATCH' && isset($headers['queue-pause'])){
 
     $id = $_GET['id'];
 

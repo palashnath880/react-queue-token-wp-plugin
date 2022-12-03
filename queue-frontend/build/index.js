@@ -2219,16 +2219,16 @@ const App = () => {
       tokenId: search[1]
     });
   }
-  if ((queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.type) === 'queue_branch') {
+  if ((queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_type) === 'queue_branch') {
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_layout_BranchManage__WEBPACK_IMPORTED_MODULE_4__["default"], null);
   }
-  if ((queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.type) === 'queue_counter') {
+  if ((queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_type) === 'queue_counter') {
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_layout_Counter_Counter__WEBPACK_IMPORTED_MODULE_5__["default"], null);
   }
-  if ((queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.type) === 'queue_display') {
+  if ((queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_type) === 'queue_display') {
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_layout_DisplayQueue__WEBPACK_IMPORTED_MODULE_7__["default"], null);
   }
-  if ((queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.type) === 'queue_creator') {
+  if ((queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_type) === 'queue_creator') {
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_layout_CreateQueue__WEBPACK_IMPORTED_MODULE_6__["default"], null);
   }
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -2298,7 +2298,7 @@ const BranchCounter = () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Create-Queue': queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.id
+        'Create-Queue': queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_id
       },
       body: JSON.stringify({
         counter_name,
@@ -2466,7 +2466,7 @@ const BranchReport = () => {
       return;
     }
     setLoading(true);
-    const url = `${plugin_url}queue-manage.php?queue_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.id}&from_date=${from_date}&to_date=${to_date}`;
+    const url = `${plugin_url}queue-manage.php?queue_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_id}&from_date=${from_date}&to_date=${to_date}`;
     fetch(url).then(res => res.json()).then(data => console.log(data)).catch(err => console.error(err));
   };
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -2666,7 +2666,7 @@ const CounterBodySideBar = props => {
     const res = await fetch(`${plugin_url}queue-counter-manage.php`, {
       method: 'POST',
       headers: {
-        'QUEUE_RECALL_TOKEN': `${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.name} Token Number ${queueToken === null || queueToken === void 0 ? void 0 : queueToken.queue_token}`,
+        'QUEUE_RECALL_TOKEN': `${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_name} Token Number ${queueToken === null || queueToken === void 0 ? void 0 : queueToken.queue_token}`,
         'QUEUE_BRANCH_ID': queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.branch_id
       }
     });
@@ -2753,17 +2753,16 @@ const CounterBodySideBar = props => {
 
   // counter logout
   const logOutHandler = () => {
-    counterHandler(queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.id, 'off');
     window.location.href = queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.logout_url;
   };
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(async () => {
     const url = `${plugin_url}queue-counter-manage.php?branch_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.branch_id}`;
     fetch(url, {
       headers: {
-        'GET_ALL_COUNTER': 'QUEUE_COUNTER'
+        get_all_counter: 'queue_counter'
       }
     }).then(res => res.json()).then(data => {
-      const deleteThisCounter = data === null || data === void 0 ? void 0 : data.counters.filter(counter => counter.counter_id != (queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.id));
+      const deleteThisCounter = data === null || data === void 0 ? void 0 : data.counters.filter(counter => counter.counter_id != (queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_id));
       setCounters(deleteThisCounter);
     });
   }, []);
@@ -2857,7 +2856,7 @@ const CounterBodySideBar = props => {
     className: "px-4 py-2 border-2 border-gray-300"
   }, "Cancel"))))));
 };
-/* harmony default export */ __webpack_exports__["default"] = (CounterBodySideBar);
+/* harmony default export */ __webpack_exports__["default"] = (react__WEBPACK_IMPORTED_MODULE_1___default().memo(CounterBodySideBar));
 
 /***/ }),
 
@@ -2903,15 +2902,19 @@ const CounterBody = _ref => {
     queueBranch
   } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useContext)(_contexts_QueueContextProvider__WEBPACK_IMPORTED_MODULE_4__.QueueContext);
   const [breakTime, setBreakTime] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
+
+  // formate date
   const formatDate = date => {
     const dt = new Date(date);
     return dt.toLocaleTimeString();
   };
+
+  // get queue token 
   const getQueueToken = () => {
-    const url = `${plugin_url}queue-counter-manage.php?counter_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.id}&branch_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.branch_id}`;
+    const url = `${plugin_url}queue-counter-manage.php?counter_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_id}&branch_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.branch_id}`;
     fetch(url, {
       headers: {
-        'GET_QUEUE_TOKEN': queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.id
+        'get_queue_token': queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_id
       }
     }).then(res => res.json()).then(data => {
       if ((data === null || data === void 0 ? void 0 : data.status) === 'good') {
@@ -2919,11 +2922,13 @@ const CounterBody = _ref => {
       }
     }).catch(err => console.error(err));
   };
+
+  // get transferred token 
   const getTransferredQueueToken = () => {
-    const url = `${plugin_url}queue-counter-manage.php?cou_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.id}&bra_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.branch_id}`;
+    const url = `${plugin_url}queue-counter-manage.php?cou_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_id}&bra_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.branch_id}`;
     fetch(url, {
       headers: {
-        'GET_TRANSFERRED_QUEUE_TOKEN': queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.id
+        'get_transferred_queue_token': queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_id
       }
     }).then(res => res.json()).then(data => {
       if ((data === null || data === void 0 ? void 0 : data.status) === 'good') {
@@ -2931,6 +2936,8 @@ const CounterBody = _ref => {
       }
     }).catch(err => console.error(err));
   };
+
+  // waiting time function
   const waitingTimeFunc = date => {
     const startDate = new Date(date);
     const cuDate = new Date();
@@ -3183,24 +3190,51 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const CounterDefine = () => {
-  const [printerCounter, setPrinterCounter] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
-  const [corporateCounter, setCorporateCounter] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
+  const [defineCustomer, setDefineCustomer] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
+  const [defineCustomerCounter, setDefineCustomerCounter] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
+  const [defineProduct, setDefineProduct] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
+  const [defineProductCounter, setDefineProductCounter] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
   const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(true);
-  const [options, setOptions] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
   const {
-    plugin_url
+    plugin_url,
+    queueBranch
   } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useContext)(_contexts_QueueContextProvider__WEBPACK_IMPORTED_MODULE_3__.QueueContext);
+  const counters = (queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.counters) && queueBranch.counters.filter(counter => counter.counter_type == 'queue_counter').map(counter => {
+    return {
+      value: counter.counter_id,
+      label: counter.counter_name
+    };
+  });
+  const customerType = [{
+    value: 'corporate',
+    label: 'Corporate'
+  }, {
+    value: 'end_user',
+    label: 'End User'
+  }, {
+    value: 'dealer',
+    label: 'Dealer'
+  }];
+  const products = (queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_products) && queueBranch.queue_products.map(item => {
+    return {
+      value: item,
+      label: item
+    };
+  });
   const handleDefineCounter = () => {
+    const updateData = {
+      defineCustomer: (defineCustomer === null || defineCustomer === void 0 ? void 0 : defineCustomer.value) || null,
+      defineCustomerCounter: (defineCustomerCounter === null || defineCustomerCounter === void 0 ? void 0 : defineCustomerCounter.value) || null,
+      defineProduct: (defineProduct === null || defineProduct === void 0 ? void 0 : defineProduct.value) || null,
+      defineProductCounter: (defineProductCounter === null || defineProductCounter === void 0 ? void 0 : defineProductCounter.value) || null
+    };
     const toastId = react_hot_toast__WEBPACK_IMPORTED_MODULE_2__["default"].loading('Updating');
     fetch(`${plugin_url}queue-manage.php`, {
       method: 'PATCH',
       headers: {
         'update_define_counter': 'true'
       },
-      body: JSON.stringify({
-        printerCounter,
-        corporateCounter
-      })
+      body: JSON.stringify(updateData)
     }).then(res => res.json()).then(() => {
       react_hot_toast__WEBPACK_IMPORTED_MODULE_2__["default"].dismiss(toastId);
       react_hot_toast__WEBPACK_IMPORTED_MODULE_2__["default"].success('Update Successfully');
@@ -3216,20 +3250,12 @@ const CounterDefine = () => {
       }
     }).then(res => res.json()).then(data => {
       if ((data === null || data === void 0 ? void 0 : data.status) === 'good') {
-        setCorporateCounter(data === null || data === void 0 ? void 0 : data.corporate_counter);
-        setPrinterCounter(data === null || data === void 0 ? void 0 : data.printer_counter);
-        let counters = [];
-        data === null || data === void 0 ? void 0 : data.counters.map(counter => {
-          if ((counter === null || counter === void 0 ? void 0 : counter.counter_type) == 'queue_counter') {
-            counters.push({
-              value: counter === null || counter === void 0 ? void 0 : counter.counter_id,
-              label: counter === null || counter === void 0 ? void 0 : counter.counter_name
-            });
-          }
-        });
-        setOptions(counters);
-        setLoading(false);
+        setDefineCustomer(customerType.find(item => item.value == (data === null || data === void 0 ? void 0 : data.define_customer)));
+        setDefineCustomerCounter(counters.find(counter => counter.value == (data === null || data === void 0 ? void 0 : data.define_customer_counter)));
+        setDefineProduct(products.find(item => item.value == (data === null || data === void 0 ? void 0 : data.define_product)));
+        setDefineProductCounter(counters.find(counter => counter.value == (data === null || data === void 0 ? void 0 : data.define_product_counter)));
       }
+      setLoading(false);
     }).catch(err => console.error(err));
   }, []);
   if (loading) {
@@ -3244,32 +3270,60 @@ const CounterDefine = () => {
   }, "Counter Define"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "py-5"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "mx-auto lg:w-1/2 p-2 shadow-lg"
+    className: "p-2 shadow-lg"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "mb-2"
+    className: "mb-2 flex gap-4"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "flex-1"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {
-    htmlFor: "printerCounter",
+    htmlFor: "defineCustomer",
     className: "block"
-  }, "Printer Counter "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_select__WEBPACK_IMPORTED_MODULE_5__["default"], {
-    options: options,
-    placeholder: "Select Printer Counter",
-    name: "printerCounter",
+  }, "Select Customer Type"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_select__WEBPACK_IMPORTED_MODULE_5__["default"], {
+    options: customerType,
+    placeholder: "Select Customer Type",
+    name: "defineCustomer",
     isClearable: true,
-    onChange: e => setPrinterCounter(e ? e.value : 0),
-    defaultValue: () => options.filter(cou => cou.value == printerCounter)
+    onChange: e => setDefineCustomer(e),
+    defaultValue: defineCustomer
   })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "mb-2"
+    className: "flex-1"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {
-    htmlFor: "corporateCounter",
+    htmlFor: "defineCustomerCounter",
     className: "block"
-  }, "Corporate Counter "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_select__WEBPACK_IMPORTED_MODULE_5__["default"], {
-    options: options,
-    placeholder: "Select Corporate Counter ",
-    name: "corporateCounter",
+  }, "Customer Type Counter "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_select__WEBPACK_IMPORTED_MODULE_5__["default"], {
+    options: counters.filter(counter => counter.value !== (defineProductCounter === null || defineProductCounter === void 0 ? void 0 : defineProductCounter.value)),
+    placeholder: "Select Customer Type Counter",
+    name: "defineCustomerCounter",
     isClearable: true,
-    onChange: e => setCorporateCounter(e ? e.value : 0),
-    defaultValue: () => options.filter(cou => cou.value == corporateCounter)
+    onChange: e => setDefineCustomerCounter(e),
+    defaultValue: defineCustomerCounter
+  }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "mb-2 flex gap-4"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "flex-1"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {
+    htmlFor: "defineProduct",
+    className: "block"
+  }, "Select Product Type"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_select__WEBPACK_IMPORTED_MODULE_5__["default"], {
+    options: products,
+    placeholder: "Select Product Type",
+    name: "defineProduct",
+    isClearable: true,
+    onChange: e => setDefineProduct(e),
+    defaultValue: defineProduct
   })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "flex-1"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {
+    htmlFor: "defineProductCounter",
+    className: "block"
+  }, "Product Type Counter "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(react_select__WEBPACK_IMPORTED_MODULE_5__["default"], {
+    options: counters.filter(counter => counter.value !== (defineCustomerCounter === null || defineCustomerCounter === void 0 ? void 0 : defineCustomerCounter.value)),
+    placeholder: "Select Product Type Counter",
+    name: "defineProductCounter",
+    isClearable: true,
+    onChange: e => setDefineProductCounter(e),
+    defaultValue: defineProductCounter
+  }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "mt-4"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
     onClick: handleDefineCounter,
@@ -3299,32 +3353,133 @@ __webpack_require__.r(__webpack_exports__);
 const CounterHeader = _ref => {
   let {
     loading,
-    counterStatus,
-    counterHandler,
     queueToken
   } = _ref;
   const {
     queueBranch
   } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useContext)(_contexts_QueueContextProvider__WEBPACK_IMPORTED_MODULE_2__.QueueContext);
+  const logOut = () => {
+    window.location.href = queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.logout_url;
+  };
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "py-3 flex bg-gray-700"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h1", {
     className: "text-slate-50 text-xl font-semibold text-center flex-1"
-  }, queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.name, " - ", queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.branch_name), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {
-    htmlFor: "purple-toggle",
-    className: `inline-flex relative items-center mr-5 cursor-pointer ${loading ? 'pointer-events-none' : 'pointer-events-auto'}`
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
+  }, queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_name, " - ", queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.branch_name), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {
     disabled: queueToken !== null ? true : false,
-    onChange: () => counterHandler(queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.id, counterStatus ? 'off' : 'on'),
-    type: "checkbox",
-    checked: counterStatus ? true : false,
-    id: "purple-toggle",
-    className: "sr-only peer"
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 peer-checked:after:translate-x-full  after:content-[''] after:absolute after:top-1/2 after:-translate-y-1/2 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"
-  })));
+    onClick: logOut,
+    htmlFor: "purple-toggle",
+    className: `inline-flex text-slate-50 relative items-center mr-5 cursor-pointer ${loading ? 'pointer-events-none' : 'pointer-events-auto'}`
+  }, "Logout"));
 };
 /* harmony default export */ __webpack_exports__["default"] = (CounterHeader);
+
+/***/ }),
+
+/***/ "./src/components/DisplayCounters/DisplayCounters.js":
+/*!***********************************************************!*\
+  !*** ./src/components/DisplayCounters/DisplayCounters.js ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _contexts_QueueContextProvider__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../contexts/QueueContextProvider */ "./src/contexts/QueueContextProvider.js");
+
+
+
+const DisplayCounters = () => {
+  const [openCounters, setOpenCounters] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
+  const {
+    queueBranch,
+    plugin_url
+  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useContext)(_contexts_QueueContextProvider__WEBPACK_IMPORTED_MODULE_2__.QueueContext);
+  (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
+    let interval;
+    interval = setInterval(() => {
+      const url = `${plugin_url}queue-token-display.php?branch_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.branch_id}`;
+      fetch(url, {
+        headers: {
+          'get_all_counters': 'QUEUE_DISPLAY'
+        }
+      }).then(res => res.json()).then(data => setOpenCounters(data === null || data === void 0 ? void 0 : data.counters)).catch(err => console.error(err));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("table", {
+    className: "w-full table border-collapse mt-4"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("thead", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("tr", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("th", {
+    className: "border py-2"
+  }, "Counter"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("th", {
+    className: "border py-2"
+  }, "Token No"))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("tbody", null, openCounters !== null && openCounters.map((cou, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("tr", {
+    key: index,
+    className: "text-center"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("td", {
+    className: "border py-2 "
+  }, cou === null || cou === void 0 ? void 0 : cou.counter_name), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("td", {
+    className: "border py-2"
+  }, cou === null || cou === void 0 ? void 0 : cou.running_token)))));
+};
+/* harmony default export */ __webpack_exports__["default"] = (DisplayCounters);
+
+/***/ }),
+
+/***/ "./src/components/DisplayNextQueue/DisplayNextQueue.js":
+/*!*************************************************************!*\
+  !*** ./src/components/DisplayNextQueue/DisplayNextQueue.js ***!
+  \*************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _contexts_QueueContextProvider__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../contexts/QueueContextProvider */ "./src/contexts/QueueContextProvider.js");
+
+
+
+const DisplayNextQueue = () => {
+  const [nextTokens, setNextTokens] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
+  const {
+    queueBranch,
+    plugin_url
+  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useContext)(_contexts_QueueContextProvider__WEBPACK_IMPORTED_MODULE_2__.QueueContext);
+
+  // pending queue token
+  const pendingQueueToken = () => {
+    const url = `${plugin_url}queue-token-display.php?branch_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.branch_id}`;
+    fetch(url, {
+      headers: {
+        'get_next_queue': 'NEXT_QUEUE'
+      }
+    }).then(res => res.json()).then(data => {
+      setNextTokens(data === null || data === void 0 ? void 0 : data.tokens);
+    }).catch(err => console.error(err));
+  };
+
+  //
+  (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
+    let interval;
+    interval = setInterval(() => {
+      pendingQueueToken();
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [queueBranch]);
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("marquee", {
+    className: "flex items-center"
+  }, nextTokens !== null && nextTokens.map((token, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+    key: index,
+    className: "bg-gray-700 text-slate-50 px-3 py-2 mr-3 rounded inline-block"
+  }, token)));
+};
+/* harmony default export */ __webpack_exports__["default"] = (DisplayNextQueue);
 
 /***/ }),
 
@@ -3593,7 +3748,7 @@ const QueueForm = _ref => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'queue-creator': queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.id
+        'queue-creator': queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_id
       },
       body: JSON.stringify({
         service_type,
@@ -3604,7 +3759,6 @@ const QueueForm = _ref => {
       })
     };
     fetch(url, requestOptions).then(res => res.json()).then(data => {
-      console.log(data);
       setLoading(false);
       if ((data === null || data === void 0 ? void 0 : data.status) === 'good') {
         sendQueueToken(data, customer_mobile, customer_name);
@@ -3779,15 +3933,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _contexts_QueueContextProvider__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../contexts/QueueContextProvider */ "./src/contexts/QueueContextProvider.js");
+
 
 
 const VideoPlayer = _ref => {
-  let {
-    videos
-  } = _ref;
+  let {} = _ref;
   const video = (0,react__WEBPACK_IMPORTED_MODULE_1__.useRef)();
   const [index, setIndex] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0);
   const [currentVideoSrc, setCurrentVideoSrc] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
+  const {
+    queueBranch,
+    plugin_url
+  } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useContext)(_contexts_QueueContextProvider__WEBPACK_IMPORTED_MODULE_2__.QueueContext);
+  const [videos, setVideos] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
   const videoHandler = () => {
     if (videos.length - 1 === index) {
       setIndex(0);
@@ -3800,6 +3959,16 @@ const VideoPlayer = _ref => {
       setCurrentVideoSrc(videos[index]);
     }
   }, [index, videos]);
+  (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
+    const url = `${plugin_url}queue-token-display.php?branch_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.branch_id}`;
+    fetch(url, {
+      headers: {
+        'get_video_ads': 'video_ads'
+      }
+    }).then(res => res.json()).then(data => {
+      setVideos(data === null || data === void 0 ? void 0 : data.videos);
+    }).catch(err => console.error(err));
+  }, []);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "rounded-md overflow-hidden flex items-center justify-center h-full"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("video", {
@@ -3816,7 +3985,7 @@ const VideoPlayer = _ref => {
     muted: true
   }));
 };
-/* harmony default export */ __webpack_exports__["default"] = (VideoPlayer);
+/* harmony default export */ __webpack_exports__["default"] = (react__WEBPACK_IMPORTED_MODULE_1___default().memo(VideoPlayer));
 
 /***/ }),
 
@@ -3892,7 +4061,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const BranchManage = () => {
-  const [menuItem, setMenuItem] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)((0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_BranchCounter_BranchCounter__WEBPACK_IMPORTED_MODULE_2__["default"], null));
+  const [menuItem, setMenuItem] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)((0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_CounterDefine_CounterDefine__WEBPACK_IMPORTED_MODULE_4__["default"], null));
   const {
     queueBranch
   } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useContext)(_contexts_QueueContextProvider__WEBPACK_IMPORTED_MODULE_5__.QueueContext);
@@ -3904,7 +4073,7 @@ const BranchManage = () => {
     className: "px-2 py-3 h-full text-slate-50 flex flex-col"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", {
     className: "text-center text-2xl pb-3 border-b"
-  }, queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.name), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("ul", {
+  }, queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_name), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("ul", {
     className: "mt-4 flex-1"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("li", {
     onClick: () => setMenuItem((0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_BranchCounter_BranchCounter__WEBPACK_IMPORTED_MODULE_2__["default"], null)),
@@ -3989,7 +4158,7 @@ const Counter = () => {
     }).catch(err => console.error(err));
   };
   (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    const url = `${plugin_url}queue-counter-manage.php?counter_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.id}`;
+    const url = `${plugin_url}queue-counter-manage.php?counter_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.queue_id}`;
     fetch(url).then(res => res.json()).then(data => {
       setLoading(false);
       (data === null || data === void 0 ? void 0 : data.counter_status) == 'on' && setCounterStatus(true);
@@ -4151,7 +4320,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _components_VideoPlayer_VideoPlayer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/VideoPlayer/VideoPlayer */ "./src/components/VideoPlayer/VideoPlayer.js");
 /* harmony import */ var _contexts_QueueContextProvider__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../contexts/QueueContextProvider */ "./src/contexts/QueueContextProvider.js");
-/* harmony import */ var react_speech_kit__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-speech-kit */ "./node_modules/react-speech-kit/dist/index.js");
+/* harmony import */ var _components_DisplayCounters_DisplayCounters__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/DisplayCounters/DisplayCounters */ "./src/components/DisplayCounters/DisplayCounters.js");
+/* harmony import */ var _components_DisplayNextQueue_DisplayNextQueue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/DisplayNextQueue/DisplayNextQueue */ "./src/components/DisplayNextQueue/DisplayNextQueue.js");
+/* harmony import */ var _utilities_RealTime__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utilities/RealTime */ "./src/utilities/RealTime.js");
+
+
 
 
 
@@ -4159,32 +4332,10 @@ __webpack_require__.r(__webpack_exports__);
 
 const DisplayQueue = () => {
   const {
-    queueBranch,
-    plugin_url
+    queueBranch
   } = (0,react__WEBPACK_IMPORTED_MODULE_1__.useContext)(_contexts_QueueContextProvider__WEBPACK_IMPORTED_MODULE_3__.QueueContext);
-  const [openCounters, setOpenCounters] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
-  const [nextTokens, setNextTokens] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
-  const [videoAds, setVideoAds] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
   const [isFullScreen, setIsFullScreen] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false);
-  const [reCallToken, setReCallToken] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
   const ref = (0,react__WEBPACK_IMPORTED_MODULE_1__.useRef)();
-  const {
-    speak
-  } = (0,react_speech_kit__WEBPACK_IMPORTED_MODULE_4__.useSpeechSynthesis)({
-    onEnd: () => {
-      setReCallToken(null);
-    }
-  });
-
-  // get all open counter
-  const openCounter = () => {
-    const url = `${plugin_url}queue-token-display.php?branch_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.branch_id}`;
-    fetch(url, {
-      headers: {
-        'get_all_counters': 'QUEUE_DISPLAY'
-      }
-    }).then(res => res.json()).then(data => setOpenCounters(data === null || data === void 0 ? void 0 : data.counters)).catch(err => console.error(err));
-  };
   const fullScreenHandler = () => {
     if (ref.current.requestFullscreen) {
       ref.current.requestFullscreen();
@@ -4209,65 +4360,6 @@ const DisplayQueue = () => {
     }
     setIsFullScreen(false);
   };
-
-  // pending queue token
-  const pendingQueueToken = () => {
-    const url = `${plugin_url}queue-token-display.php?branch_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.branch_id}`;
-    fetch(url, {
-      headers: {
-        'get_next_queue': 'NEXT_QUEUE'
-      }
-    }).then(res => res.json()).then(data => {
-      setNextTokens(data === null || data === void 0 ? void 0 : data.tokens);
-    }).catch(err => console.error(err));
-  };
-
-  // get recall token
-  const fetchReCallToken = () => {
-    fetch(`${plugin_url}queue-token-display.php?branch_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.branch_id}`, {
-      headers: {
-        'get_recall_token': 'TRUE'
-      }
-    }).then(res => res.json()).then(data => {
-      if ((data === null || data === void 0 ? void 0 : data.status) == 'good') {
-        setReCallToken(data === null || data === void 0 ? void 0 : data.token);
-      }
-    });
-  };
-  (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    if (reCallToken !== null) {
-      speak({
-        text: `${reCallToken}`
-      });
-    }
-  }, [reCallToken]);
-  (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    let interval;
-    interval = setInterval(() => {
-      if (reCallToken === null) {
-        fetchReCallToken();
-      }
-    }, 500);
-    return () => clearInterval(interval);
-  }, [reCallToken]);
-
-  //
-  (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
-    let interval;
-    interval = setInterval(() => {
-      openCounter();
-      pendingQueueToken();
-    }, 1000);
-    const url = `${plugin_url}queue-token-display.php?branch_id=${queueBranch === null || queueBranch === void 0 ? void 0 : queueBranch.branch_id}`;
-    fetch(url, {
-      headers: {
-        'get_video_ads': 'video_ads'
-      }
-    }).then(res => res.json()).then(data => {
-      setVideoAds(data === null || data === void 0 ? void 0 : data.videos);
-    }).catch(err => console.error(err));
-    return () => clearInterval(interval);
-  }, [queueBranch]);
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "h-screen w-full bg-blue-200",
     ref: ref
@@ -4319,7 +4411,7 @@ const DisplayQueue = () => {
     d: "M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"
   }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
     className: "absolute right-8 font-semibold text-2xl top-1/2 -translate-y-1/2"
-  }, ` ${new Date().toDateString()} ${new Date().toLocaleTimeString()}`))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_utilities_RealTime__WEBPACK_IMPORTED_MODULE_6__["default"], null)))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "flex-1 flex py-3"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "w-9/12 h-full"
@@ -4327,9 +4419,7 @@ const DisplayQueue = () => {
     className: "px-3 h-full"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "border-2 p-2 h-full rounded-lg bg-slate-300 overflow-hidden"
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_VideoPlayer_VideoPlayer__WEBPACK_IMPORTED_MODULE_2__["default"], {
-    videos: videoAds
-  })))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_VideoPlayer_VideoPlayer__WEBPACK_IMPORTED_MODULE_2__["default"], null)))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "w-3/12"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "px-3 border rounded-md h-full bg-violet-500 text-slate-50"
@@ -4337,20 +4427,7 @@ const DisplayQueue = () => {
     className: ""
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h1", {
     className: "text-center text-3xl border-b-2 border-violet-500 py-3"
-  }, "Running Token No"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("table", {
-    className: "w-full table border-collapse mt-4"
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("thead", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("tr", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("th", {
-    className: "border py-2"
-  }, "Counter"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("th", {
-    className: "border py-2"
-  }, "Token No"))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("tbody", null, openCounters !== null && openCounters.map((cou, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("tr", {
-    key: index,
-    className: "text-center"
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("td", {
-    className: "border py-2 "
-  }, cou === null || cou === void 0 ? void 0 : cou.counter_name), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("td", {
-    className: "border py-2"
-  }, cou === null || cou === void 0 ? void 0 : cou.running_token))))))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, "Running Token No"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_DisplayCounters_DisplayCounters__WEBPACK_IMPORTED_MODULE_4__["default"], null))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "pb-3"
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: " border flex items-center rounded-md border-violet-500"
@@ -4360,12 +4437,7 @@ const DisplayQueue = () => {
     className: "text-2xl"
   }, "Next Queues")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "ml-2"
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("marquee", {
-    className: "flex items-center"
-  }, nextTokens !== null && nextTokens.map((token, index) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
-    key: index,
-    className: "bg-gray-700 text-slate-50 px-3 py-2 mr-3 rounded inline-block"
-  }, token))))))));
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_DisplayNextQueue_DisplayNextQueue__WEBPACK_IMPORTED_MODULE_5__["default"], null))))));
 };
 /* harmony default export */ __webpack_exports__["default"] = (DisplayQueue);
 
@@ -4550,6 +4622,35 @@ const QueueFeedback = _ref => {
   }, "Submit"))))));
 };
 /* harmony default export */ __webpack_exports__["default"] = (QueueFeedback);
+
+/***/ }),
+
+/***/ "./src/utilities/RealTime.js":
+/*!***********************************!*\
+  !*** ./src/utilities/RealTime.js ***!
+  \***********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+
+
+const RealTime = () => {
+  const [time, setTime] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)('');
+  (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
+    let interval;
+    interval = setInterval(() => {
+      setTime(`${new Date().toDateString()} ${new Date().toLocaleTimeString()}`);
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, time);
+};
+/* harmony default export */ __webpack_exports__["default"] = (RealTime);
 
 /***/ }),
 
@@ -11024,305 +11125,6 @@ function useStateManager(_ref) {
 
 
 
-
-/***/ }),
-
-/***/ "./node_modules/react-speech-kit/dist/index.js":
-/*!*****************************************************!*\
-  !*** ./node_modules/react-speech-kit/dist/index.js ***!
-  \*****************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-
-var _useSpeechRecognition = __webpack_require__(/*! ./useSpeechRecognition */ "./node_modules/react-speech-kit/dist/useSpeechRecognition.js");
-
-Object.defineProperty(exports, "useSpeechRecognition", ({
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_useSpeechRecognition).default;
-  }
-}));
-
-var _useSpeechSynthesis = __webpack_require__(/*! ./useSpeechSynthesis */ "./node_modules/react-speech-kit/dist/useSpeechSynthesis.js");
-
-Object.defineProperty(exports, "useSpeechSynthesis", ({
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_useSpeechSynthesis).default;
-  }
-}));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/***/ }),
-
-/***/ "./node_modules/react-speech-kit/dist/useSpeechRecognition.js":
-/*!********************************************************************!*\
-  !*** ./node_modules/react-speech-kit/dist/useSpeechRecognition.js ***!
-  \********************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var _react = __webpack_require__(/*! react */ "react");
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-/**
- * Custom hook similar to useCallback, but for callbacks where the dependencies
- * change frequently. Ensures that references to state and props inside the
- * callback always get the latest values. Used to keep the `listen` and `stop`
- * functions in sync with the latest values of the `listening` and `supported`
- * state variables. See this issue for an example of why this is needed:
- *
- *   https://github.com/MikeyParton/react-speech-kit/issues/31
- *
- * Implementation taken from "How to read an often-changing value from
- * useCallback?" in the React hooks API reference:
- *
- *   https://reactjs.org/docs/hooks-faq.html#how-to-read-an-often-changing-value-from-usecallback
- */
-var useEventCallback = function useEventCallback(fn, dependencies) {
-  var ref = (0, _react.useRef)(function () {
-    throw new Error('Cannot call an event handler while rendering.');
-  });
-
-  (0, _react.useEffect)(function () {
-    ref.current = fn;
-  }, [fn].concat(_toConsumableArray(dependencies)));
-
-  return (0, _react.useCallback)(function (args) {
-    var fn = ref.current;
-    return fn(args);
-  }, [ref]);
-};
-
-var useSpeechRecognition = function useSpeechRecognition() {
-  var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var _props$onEnd = props.onEnd,
-      onEnd = _props$onEnd === undefined ? function () {} : _props$onEnd,
-      _props$onResult = props.onResult,
-      onResult = _props$onResult === undefined ? function () {} : _props$onResult,
-      _props$onError = props.onError,
-      onError = _props$onError === undefined ? function () {} : _props$onError;
-
-  var recognition = (0, _react.useRef)(null);
-
-  var _useState = (0, _react.useState)(false),
-      _useState2 = _slicedToArray(_useState, 2),
-      listening = _useState2[0],
-      setListening = _useState2[1];
-
-  var _useState3 = (0, _react.useState)(false),
-      _useState4 = _slicedToArray(_useState3, 2),
-      supported = _useState4[0],
-      setSupported = _useState4[1];
-
-  var processResult = function processResult(event) {
-    var transcript = Array.from(event.results).map(function (result) {
-      return result[0];
-    }).map(function (result) {
-      return result.transcript;
-    }).join('');
-
-    onResult(transcript);
-  };
-
-  var handleError = function handleError(event) {
-    if (event.error === 'not-allowed') {
-      recognition.current.onend = function () {};
-      setListening(false);
-    }
-    onError(event);
-  };
-
-  var listen = useEventCallback(function () {
-    var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    if (listening || !supported) return;
-    var _args$lang = args.lang,
-        lang = _args$lang === undefined ? '' : _args$lang,
-        _args$interimResults = args.interimResults,
-        interimResults = _args$interimResults === undefined ? true : _args$interimResults,
-        _args$continuous = args.continuous,
-        continuous = _args$continuous === undefined ? false : _args$continuous,
-        _args$maxAlternatives = args.maxAlternatives,
-        maxAlternatives = _args$maxAlternatives === undefined ? 1 : _args$maxAlternatives,
-        grammars = args.grammars;
-
-    setListening(true);
-    recognition.current.lang = lang;
-    recognition.current.interimResults = interimResults;
-    recognition.current.onresult = processResult;
-    recognition.current.onerror = handleError;
-    recognition.current.continuous = continuous;
-    recognition.current.maxAlternatives = maxAlternatives;
-    if (grammars) {
-      recognition.current.grammars = grammars;
-    }
-    // SpeechRecognition stops automatically after inactivity
-    // We want it to keep going until we tell it to stop
-    recognition.current.onend = function () {
-      return recognition.current.start();
-    };
-    recognition.current.start();
-  }, [listening, supported, recognition]);
-
-  var stop = useEventCallback(function () {
-    if (!listening || !supported) return;
-    recognition.current.onresult = function () {};
-    recognition.current.onend = function () {};
-    recognition.current.onerror = function () {};
-    setListening(false);
-    recognition.current.stop();
-    onEnd();
-  }, [listening, supported, recognition, onEnd]);
-
-  (0, _react.useEffect)(function () {
-    if (typeof window === 'undefined') return;
-    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (window.SpeechRecognition) {
-      setSupported(true);
-      recognition.current = new window.SpeechRecognition();
-    }
-  }, []);
-
-  return {
-    listen: listen,
-    listening: listening,
-    stop: stop,
-    supported: supported
-  };
-};
-
-exports["default"] = useSpeechRecognition;
-
-/***/ }),
-
-/***/ "./node_modules/react-speech-kit/dist/useSpeechSynthesis.js":
-/*!******************************************************************!*\
-  !*** ./node_modules/react-speech-kit/dist/useSpeechSynthesis.js ***!
-  \******************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var _react = __webpack_require__(/*! react */ "react");
-
-var useSpeechSynthesis = function useSpeechSynthesis() {
-  var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var _props$onEnd = props.onEnd,
-      onEnd = _props$onEnd === undefined ? function () {} : _props$onEnd;
-
-  var _useState = (0, _react.useState)([]),
-      _useState2 = _slicedToArray(_useState, 2),
-      voices = _useState2[0],
-      setVoices = _useState2[1];
-
-  var _useState3 = (0, _react.useState)(false),
-      _useState4 = _slicedToArray(_useState3, 2),
-      speaking = _useState4[0],
-      setSpeaking = _useState4[1];
-
-  var _useState5 = (0, _react.useState)(false),
-      _useState6 = _slicedToArray(_useState5, 2),
-      supported = _useState6[0],
-      setSupported = _useState6[1];
-
-  var processVoices = function processVoices(voiceOptions) {
-    setVoices(voiceOptions);
-  };
-
-  var getVoices = function getVoices() {
-    // Firefox seems to have voices upfront and never calls the
-    // voiceschanged event
-    var voiceOptions = window.speechSynthesis.getVoices();
-    if (voiceOptions.length > 0) {
-      processVoices(voiceOptions);
-      return;
-    }
-
-    window.speechSynthesis.onvoiceschanged = function (event) {
-      voiceOptions = event.target.getVoices();
-      processVoices(voiceOptions);
-    };
-  };
-
-  var handleEnd = function handleEnd() {
-    setSpeaking(false);
-    onEnd();
-  };
-
-  (0, _react.useEffect)(function () {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      setSupported(true);
-      getVoices();
-    }
-  }, []);
-
-  var speak = function speak() {
-    var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _args$voice = args.voice,
-        voice = _args$voice === undefined ? null : _args$voice,
-        _args$text = args.text,
-        text = _args$text === undefined ? '' : _args$text,
-        _args$rate = args.rate,
-        rate = _args$rate === undefined ? 1 : _args$rate,
-        _args$pitch = args.pitch,
-        pitch = _args$pitch === undefined ? 1 : _args$pitch,
-        _args$volume = args.volume,
-        volume = _args$volume === undefined ? 1 : _args$volume;
-
-    if (!supported) return;
-    setSpeaking(true);
-    // Firefox won't repeat an utterance that has been
-    // spoken, so we need to create a new instance each time
-    var utterance = new window.SpeechSynthesisUtterance();
-    utterance.text = text;
-    utterance.voice = voice;
-    utterance.onend = handleEnd;
-    utterance.rate = rate;
-    utterance.pitch = pitch;
-    utterance.volume = volume;
-    window.speechSynthesis.speak(utterance);
-  };
-
-  var cancel = function cancel() {
-    if (!supported) return;
-    setSpeaking(false);
-    window.speechSynthesis.cancel();
-  };
-
-  return {
-    supported: supported,
-    speak: speak,
-    speaking: speaking,
-    cancel: cancel,
-    voices: voices
-  };
-};
-
-exports["default"] = useSpeechSynthesis;
 
 /***/ }),
 

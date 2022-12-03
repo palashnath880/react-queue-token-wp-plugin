@@ -285,17 +285,17 @@ class QueueManage {
     }
 
     public function get_define_counter(){
+
         $get_user = wp_get_current_user();
         $role = $get_user->roles[0];
 
         if($role === 'queue_branch'){
-            $get_printer_counter = get_user_meta(get_current_user_id(), 'queue_printer_counter', true );
-            $get_corporate_counter = get_user_meta(get_current_user_id(), 'queue_corporate_counter', true );
             return array(
                 'status' => 'good',
-                'corporate_counter' => $get_corporate_counter ? $get_corporate_counter : 0,
-                'printer_counter'   => $get_printer_counter ? $get_printer_counter : 0,
-                'counters'          => $this->queue_counters(),
+                'define_customer'  => get_user_meta(get_current_user_id(), 'queue_customer' , true ),
+                'define_customer_counter'  => get_user_meta(get_current_user_id(), 'queue_customer_counter' , true ),
+                'define_product'  => get_user_meta(get_current_user_id(), 'queue_product' , true ),
+                'define_product_counter'  => get_user_meta(get_current_user_id(), 'queue_product_counter' , true ),
             );
         }else{
             return array();
@@ -304,10 +304,17 @@ class QueueManage {
     }
 
     public function update_define_counter($data){
-        $printerCounter = $data->printerCounter;
-        $corporateCounter = $data->corporateCounter;
-        update_user_meta(get_current_user_id(), 'queue_printer_counter', $printerCounter );
-        update_user_meta(get_current_user_id(), 'queue_corporate_counter', $corporateCounter );
+
+        $define_customer = $data->defineCustomer;
+        $define_customer_counter = $data->defineCustomerCounter;
+        $define_product = $data->defineProduct;
+        $define_product_counter = $data->defineProductCounter;
+
+        update_user_meta(get_current_user_id(), 'queue_customer', $define_customer );
+        update_user_meta(get_current_user_id(), 'queue_customer_counter', $define_customer_counter );
+        update_user_meta(get_current_user_id(), 'queue_product', $define_product );
+        update_user_meta(get_current_user_id(), 'queue_product_counter', $define_product_counter );
+        
         return array('status' => 'good');
     }
 

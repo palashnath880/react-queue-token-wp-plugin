@@ -6,20 +6,45 @@ import Loader from '../Loader/Loader';
 
 const CounterDefine = () => {
 
-    const [printerCounter, setPrinterCounter] = useState(null);
-    const [corporateCounter, setCorporateCounter] = useState(null);
+    const [defineCustomer, setDefineCustomer] = useState(null);
+    const [defineCustomerCounter, setDefineCustomerCounter] = useState(null);
+    const [defineProduct, setDefineProduct] = useState(null);
+    const [defineProductCounter, setDefineProductCounter] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [options, setOptions] = useState([]);
-    const { plugin_url } = useContext(QueueContext);
+    const { plugin_url, queueBranch } = useContext(QueueContext);
+
+    const counters = queueBranch?.counters &&
+        queueBranch.counters.filter(counter => counter.counter_type == 'queue_counter')
+            .map(counter => {
+                return { value: counter.counter_id, label: counter.counter_name };
+            });
+
+    const customerType = [
+        { value: 'corporate', label: 'Corporate' },
+        { value: 'end_user', label: 'End User' },
+        { value: 'dealer', label: 'Dealer' },
+    ];
+
+    const products = queueBranch?.queue_products && queueBranch.queue_products.map(item => {
+        return { value: item, label: item };
+    });
 
     const handleDefineCounter = () => {
+
+        const updateData = {
+            defineCustomer: defineCustomer?.value || null,
+            defineCustomerCounter: defineCustomerCounter?.value || null,
+            defineProduct: defineProduct?.value || null,
+            defineProductCounter: defineProductCounter?.value || null
+        };
+
         const toastId = toast.loading('Updating');
         fetch(`${plugin_url}queue-manage.php`, {
             method: 'PATCH',
             headers: {
                 'update_define_counter': 'true'
             },
-            body: JSON.stringify({ printerCounter, corporateCounter })
+            body: JSON.stringify(updateData)
         })
             .then(res => res.json())
             .then(() => {
@@ -41,17 +66,12 @@ const CounterDefine = () => {
             .then(res => res.json())
             .then(data => {
                 if (data?.status === 'good') {
-                    setCorporateCounter(data?.corporate_counter);
-                    setPrinterCounter(data?.printer_counter);
-                    let counters = [];
-                    data?.counters.map((counter) => {
-                        if (counter?.counter_type == 'queue_counter') {
-                            counters.push({ value: counter?.counter_id, label: counter?.counter_name });
-                        }
-                    });
-                    setOptions(counters);
-                    setLoading(false);
+                    setDefineCustomer(customerType.find(item => item.value == data?.define_customer));
+                    setDefineCustomerCounter(counters.find(counter => counter.value == data?.define_customer_counter));
+                    setDefineProduct(products.find(item => item.value == data?.define_product));
+                    setDefineProductCounter(counters.find(counter => counter.value == data?.define_product_counter));
                 }
+                setLoading(false);
             })
             .catch(err => console.error(err));
     }, []);
@@ -64,28 +84,54 @@ const CounterDefine = () => {
         <div className=''>
             <h1 className='text-center pb-3 border-b text-2xl'>Counter Define</h1>
             <div className='py-5'>
-                <div className='mx-auto lg:w-1/2 p-2 shadow-lg'>
-                    <div className='mb-2'>
-                        <label htmlFor='printerCounter' className='block'>Printer Counter </label>
-                        <Select
-                            options={options}
-                            placeholder='Select Printer Counter'
-                            name='printerCounter'
-                            isClearable={true}
-                            onChange={(e) => setPrinterCounter(e ? e.value : 0)}
-                            defaultValue={() => options.filter(cou => cou.value == printerCounter)}
-                        />
+                <div className='p-2 shadow-lg'>
+                    <div className='mb-2 flex gap-4'>
+                        <div className='flex-1'>
+                            <label htmlFor='defineCustomer' className='block'>Select Customer Type</label>
+                            <Select
+                                options={customerType}
+                                placeholder='Select Customer Type'
+                                name='defineCustomer'
+                                isClearable={true}
+                                onChange={(e) => setDefineCustomer(e)}
+                                defaultValue={defineCustomer}
+                            />
+                        </div>
+                        <div className='flex-1'>
+                            <label htmlFor='defineCustomerCounter' className='block'>Customer Type Counter </label>
+                            <Select
+                                options={counters.filter(counter => counter.value !== defineProductCounter?.value)}
+                                placeholder='Select Customer Type Counter'
+                                name='defineCustomerCounter'
+                                isClearable={true}
+                                onChange={(e) => setDefineCustomerCounter(e)}
+                                defaultValue={defineCustomerCounter}
+                            />
+                        </div>
                     </div>
-                    <div className='mb-2'>
-                        <label htmlFor='corporateCounter' className='block'>Corporate Counter </label>
-                        <Select
-                            options={options}
-                            placeholder='Select Corporate Counter '
-                            name='corporateCounter'
-                            isClearable={true}
-                            onChange={(e) => setCorporateCounter(e ? e.value : 0)}
-                            defaultValue={() => options.filter(cou => cou.value == corporateCounter)}
-                        />
+                    <div className='mb-2 flex gap-4'>
+                        <div className='flex-1'>
+                            <label htmlFor='defineProduct' className='block'>Select Product Type</label>
+                            <Select
+                                options={products}
+                                placeholder='Select Product Type'
+                                name='defineProduct'
+                                isClearable={true}
+                                onChange={(e) => setDefineProduct(e)}
+                                defaultValue={defineProduct}
+                            />
+                        </div>
+                        <div className='flex-1'>
+                            <label htmlFor='defineProductCounter' className='block'>Product Type Counter </label>
+                            <Select
+                                options={counters.filter(counter => counter.value !== defineCustomerCounter?.value)}
+                                placeholder='Select Product Type Counter'
+                                name='defineProductCounter'
+                                isClearable={true}
+                                onChange={(e) => setDefineProductCounter(e)}
+                                defaultValue={defineProductCounter}
+                            />
+                        </div>
                     </div>
                     <div className='mt-4'>
                         <button onClick={handleDefineCounter} className='w-full bg-violet-500 py-2 text-slate-50'>Update Define Counter</button>

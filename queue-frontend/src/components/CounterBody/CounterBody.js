@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import CounterBodySideBar from '../CounterBodySideBar/CounterBodySideBar';
 import logo from '../../images/logo.png';
 import { QueueContext } from '../../contexts/QueueContextProvider';
@@ -16,15 +16,17 @@ const CounterBody = ({ counterStatus, counterLoading, counterHandler, queueToken
     const { plugin_url, queueBranch } = useContext(QueueContext);
     const [breakTime, setBreakTime] = useState(null);
 
+    // formate date
     const formatDate = (date) => {
         const dt = new Date(date);
         return dt.toLocaleTimeString();
     }
 
+    // get queue token 
     const getQueueToken = () => {
-        const url = `${plugin_url}queue-counter-manage.php?counter_id=${queueBranch?.id}&branch_id=${queueBranch?.branch_id}`;
+        const url = `${plugin_url}queue-counter-manage.php?counter_id=${queueBranch?.queue_id}&branch_id=${queueBranch?.branch_id}`;
         fetch(url, {
-            headers: { 'GET_QUEUE_TOKEN': queueBranch?.id }
+            headers: { 'get_queue_token': queueBranch?.queue_id }
         })
             .then(res => res.json())
             .then(data => {
@@ -35,10 +37,11 @@ const CounterBody = ({ counterStatus, counterLoading, counterHandler, queueToken
             .catch(err => console.error(err));
     }
 
+    // get transferred token 
     const getTransferredQueueToken = () => {
-        const url = `${plugin_url}queue-counter-manage.php?cou_id=${queueBranch?.id}&bra_id=${queueBranch?.branch_id}`;
+        const url = `${plugin_url}queue-counter-manage.php?cou_id=${queueBranch?.queue_id}&bra_id=${queueBranch?.branch_id}`;
         fetch(url, {
-            headers: { 'GET_TRANSFERRED_QUEUE_TOKEN': queueBranch?.id }
+            headers: { 'get_transferred_queue_token': queueBranch?.queue_id }
         })
             .then(res => res.json())
             .then(data => {
@@ -49,6 +52,7 @@ const CounterBody = ({ counterStatus, counterLoading, counterHandler, queueToken
             .catch(err => console.error(err));
     }
 
+    // waiting time function
     const waitingTimeFunc = (date) => {
 
         const startDate = new Date(date);
@@ -80,6 +84,7 @@ const CounterBody = ({ counterStatus, counterLoading, counterHandler, queueToken
     // "2022-11-18 16:59:00"
 
     useEffect(() => {
+
         // set interval function
         let interval;
         interval = setInterval(() => {

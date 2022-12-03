@@ -32,7 +32,7 @@ const CounterBodySideBar = (props) => {
         const res = await fetch(`${plugin_url}queue-counter-manage.php`, {
             method: 'POST',
             headers: {
-                'QUEUE_RECALL_TOKEN': `${queueBranch?.name} Token Number ${queueToken?.queue_token}`,
+                'QUEUE_RECALL_TOKEN': `${queueBranch?.queue_name} Token Number ${queueToken?.queue_token}`,
                 'QUEUE_BRANCH_ID': queueBranch?.branch_id,
             }
         });
@@ -113,17 +113,16 @@ const CounterBodySideBar = (props) => {
 
     // counter logout
     const logOutHandler = () => {
-        counterHandler(queueBranch?.id, 'off');
         window.location.href = queueBranch?.logout_url;
     }
 
     useEffect(async () => {
 
         const url = `${plugin_url}queue-counter-manage.php?branch_id=${queueBranch?.branch_id}`;
-        fetch(url, { headers: { 'GET_ALL_COUNTER': 'QUEUE_COUNTER' } })
+        fetch(url, { headers: { get_all_counter: 'queue_counter' } })
             .then(res => res.json())
             .then(data => {
-                const deleteThisCounter = data?.counters.filter(counter => counter.counter_id != queueBranch?.id);
+                const deleteThisCounter = data?.counters.filter(counter => counter.counter_id != queueBranch?.queue_id);
                 setCounters(deleteThisCounter);
             })
 
@@ -189,4 +188,4 @@ const CounterBodySideBar = (props) => {
     );
 }
 
-export default CounterBodySideBar;
+export default React.memo(CounterBodySideBar);
